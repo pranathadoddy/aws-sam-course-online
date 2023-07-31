@@ -248,6 +248,60 @@ Resources:
             Path: /student/{id}
             Method: DELETE
 
+  getAllEnrollItemsCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/enroll/get-all-enroll-items.getAllEnrollItemsHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: 
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref EnrollTable
+      Environment:
+        Variables:
+          ENROLL_TABLE: !Ref EnrollTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /enroll/{id}
+            Method: GET
+  
+  putEnrollItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/enroll/put-enroll-item.putEnrollItemHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP post method to add one item to
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref EnrollTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StudentTable
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CourseTable
+      Environment:
+        Variables:
+           STUDENT_TABLE: !Ref StudentTable
+           COURSE_TABLE: !Ref CourseTable
+           ENROLL_TABLE: !Ref EnrollTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /enroll
+            Method: POST
+
   CourseTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
