@@ -60,6 +60,14 @@ export const updateStudentItemHandler = async (event) => {
 
         const data = await documentClient.update(params).promise();
         console.log("Success - item updated", data);
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({id: id, firstName: firstName, lastName: lastName})
+        };
+    
+        console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
+        return response;
     } catch (err) {
         console.log("Error", err.stack);
 
@@ -68,12 +76,4 @@ export const updateStudentItemHandler = async (event) => {
             body: err.stack
         }
     }
-
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify("Update Success")
-    };
-
-    console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
-    return response;
 };

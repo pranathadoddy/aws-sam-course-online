@@ -15,7 +15,6 @@ export const deleteStudentItemHandler = async (event) => {
     try {
         console.info('received:', event);
 
-
         const id = event.pathParameters.id;
 
         // Validation: Ensure that the required fields are present in the request body.
@@ -45,9 +44,16 @@ export const deleteStudentItemHandler = async (event) => {
             Key: { id: id },
         };
 
-
         const data = await ddbDocClient.send(new DeleteCommand(params));
         console.log("Success - item deleted", data);
+
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify({id: id})
+        };
+    
+        console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
+        return response;
     } catch (err) {
         console.log("Error", err.stack);
 
@@ -56,12 +62,4 @@ export const deleteStudentItemHandler = async (event) => {
             body: err.stack
         }
     }
-
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify("Delete Success")
-    };
-
-    console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
-    return response;
 };
