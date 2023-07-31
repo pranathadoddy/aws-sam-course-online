@@ -1,0 +1,167 @@
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  course-online
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Resources:
+
+  getAllItemsCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/course/get-all-items.getAllItemsHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: 
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CourseTable
+      Environment:
+        Variables:
+          COURSE_TABLE: !Ref CourseTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /course
+            Method: GET
+ 
+  getByIdCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/course/get-by-id.getByIdHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP get method to get one item by
+        id from a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CourseTable
+      Environment:
+        Variables:
+          COURSE_TABLE: !Ref CourseTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /course/{id}
+            Method: GET
+
+  putItemCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/course/put-item.putItemHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP post method to add one item to
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CourseTable
+      Environment:
+        Variables:
+           COURSE_TABLE: !Ref CourseTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /course
+            Method: POST
+
+  updateItemCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/course/update-item.updateItemHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP put method to add one item to
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CourseTable
+      Environment:
+        Variables:
+           COURSE_TABLE: !Ref CourseTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /course/{id}
+            Method: PUT
+
+  removeItemCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/course/remove-item.deleteItemHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP post method to delete one item to
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref CourseTable
+      Environment:
+        Variables:
+           COURSE_TABLE: !Ref CourseTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /course/{id}
+            Method: DELETE
+
+  CourseTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  EnrollTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
