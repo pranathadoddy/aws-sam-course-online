@@ -3,9 +3,9 @@ import AWS from 'aws-sdk';
 
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
-const tableName = process.env.COURSE_TABLE;
+const tableName = process.env.STUDENT_TABLE;
 
-export const updateItemHandler = async (event) => {
+export const updateStudentItemHandler = async (event) => {
     if (event.httpMethod !== 'PUT') {
         throw new Error(`postMethod only accepts PUT method, you tried: ${event.httpMethod} method.`);
     }
@@ -16,29 +16,29 @@ export const updateItemHandler = async (event) => {
     try {
         const body = JSON.parse(event.body);
 
-        const { name, description } = body;
+        const { firstName, lastName } = body;
 
         const id = event.pathParameters.id;
 
         // Validation: Ensure that the required fields are present in the request body.
-        if (!id && !name && !description) {
+        if (!id && !firstName && !lastName) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ message: 'Required fields are missing.' }),
             };
         }
-        const item = { id: id, name: name, description: description };
-        const courseData = await documentClient.get({
+        const item = { id: id, lastName: lastName, firstName: firstName };
+        const studentData = await documentClient.get({
             TableName: tableName,
             Key: { id: id },
         }).promise();
 
-        var courseItem = courseData.Item;
+        var studentItem = studentData.Item;
 
-        if (!courseItem) {
+        if (!studentItem) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'Course not found' }),
+                body: JSON.stringify({ message: 'Student not found' }),
             };
         }
 
@@ -46,14 +46,14 @@ export const updateItemHandler = async (event) => {
         const params = {
             TableName: tableName,
             Key: { id: id },
-            UpdateExpression: 'set #n = :name, #d = :description',
+            UpdateExpression: 'set #f = :firstName, #l = :lastName',
             ExpressionAttributeNames: {
-                '#n': 'name',
-                '#d': 'description',
+                '#f': 'firstName',
+                '#l': 'lastName',
             },
             ExpressionAttributeValues: {
-                ':name': name || null,
-                ':description': description || null,
+                ':firstName': firstName || null,
+                ':lastName': lastName || null,
             },
             ReturnValues: 'UPDATED_NEW',
         };

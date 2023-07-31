@@ -127,8 +127,138 @@ Resources:
           Properties:
             Path: /course/{id}
             Method: DELETE
+    
+  getAllStudentItemsCourseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/student/get-all-student-items.getAllIStudentItemsHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: 
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StudentTable
+      Environment:
+        Variables:
+          STUDENT_TABLE: !Ref StudentTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /student
+            Method: GET
+ 
+  getByStudentIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/student/get-by-student-id.getByStudentIdHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP get method to get one item by
+        id from a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StudentTable
+      Environment:
+        Variables:
+          STUDENT_TABLE: !Ref StudentTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /student/{id}
+            Method: GET
+
+  putStudentItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/student/put-student-item.putStudentItemHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP post method to add one item to
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StudentTable
+      Environment:
+        Variables:
+           STUDENT_TABLE: !Ref StudentTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /student
+            Method: POST
+
+  updateItemStudentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/student/update-student-item.updateStudentItemHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP put method to add one item to
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StudentTable
+      Environment:
+        Variables:
+           STUDENT_TABLE: !Ref StudentTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /student/{id}
+            Method: PUT
+
+  removeItemStudentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/student/remove-student-item.deleteStudentItemHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP post method to delete one item to
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref StudentTable
+      Environment:
+        Variables:
+           STUDENT_TABLE: !Ref StudentTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /student/{id}
+            Method: DELETE
 
   CourseTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  StudentTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:

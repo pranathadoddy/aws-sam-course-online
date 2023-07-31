@@ -7,7 +7,7 @@ const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 const tableName = process.env.STUDENT_TABLE;
 
-export const deleteItemHandler = async (event) => {
+export const deleteStudentItemHandler = async (event) => {
     if (event.httpMethod !== 'DELETE') {
         throw new Error(`postMethod only accepts DELETE method, you tried: ${event.httpMethod} method.`);
     }
@@ -26,17 +26,17 @@ export const deleteItemHandler = async (event) => {
             };
         }
 
-        const courseData = await ddbDocClient.send(new GetCommand({
+        const studentData = await ddbDocClient.send(new GetCommand({
             TableName: tableName,
             Key: { id: id },
         }));
 
-        var courseItem = courseData.Item;
+        var studentItem = studentData.Item;
 
-        if (!courseItem) {
+        if (!studentItem) {
             return {
                 statusCode: 400,
-                body: JSON.stringify({ message: 'Course not found' }),
+                body: JSON.stringify({ message: 'Student not found' }),
             };
         }
 

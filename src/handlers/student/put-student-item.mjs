@@ -5,9 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 const client = new DynamoDBClient({});
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-const tableName = process.env.COURSE_TABLE;
+const tableName = process.env.STUDENT_TABLE;
 
-export const putItemHandler = async (event) => {
+export const putStudentItemHandler = async (event) => {
     if (event.httpMethod !== 'POST') {
         throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
     }
@@ -16,10 +16,10 @@ export const putItemHandler = async (event) => {
 
     const body = JSON.parse(event.body);
 
-    const { name, description } = body;
+    const { firstName, lastName } = body;
 
     // Validation: Ensure that the required fields are present in the request body.
-    if (!name && !description) {
+    if (!firstName && !lastName) {
         return {
             statusCode: 400,
             body: JSON.stringify({ message: 'Required fields are missing.' }),
@@ -28,7 +28,7 @@ export const putItemHandler = async (event) => {
 
     const id = uuidv4();
 
-    const item = { id: id, name: name, description: description };
+    const item = { id: id, firstName: firstName, lastName: lastName };
     var params = {
         TableName: tableName,
         Item: item
